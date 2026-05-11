@@ -73,9 +73,29 @@
                 <div class="input-group">
                     <label for="gpu_type">GPU Type</label>
                     <select id="gpu_type" name="gpu_type" required>
-                        <option value="" disabled selected>Pilih GPU</option>
+                        <option value="" disabled selected>Pilih Tipe GPU</option>
                         <option value="integrated">Integrated</option>
                         <option value="dedicated">Dedicated</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="gpu_model">GPU Brand/Model</label>
+                    <select id="gpu_model" name="gpu_model" required>
+                        <option value="" disabled selected>Pilih GPU</option>
+                        <option value="intel_uhd" data-type="integrated">Intel UHD</option>
+                        <option value="intel_iris" data-type="integrated">Intel Iris Xe</option>
+                        <option value="amd_vega" data-type="integrated">AMD Radeon Vega</option>
+                        <option value="nvidia_gtx" data-type="dedicated">Nvidia GTX Series</option>
+                        <option value="nvidia_rtx" data-type="dedicated">Nvidia RTX Series</option>
+                        <option value="nvidia_rtx_3050" data-type="dedicated">Nvidia RTX 3050</option>
+                        <option value="nvidia_rtx_4050" data-type="dedicated">Nvidia RTX 4050</option>
+                        <option value="nvidia_rtx_4060" data-type="dedicated">Nvidia RTX 4060</option>
+                        <option value="nvidia_rtx_4070" data-type="dedicated">Nvidia RTX 4070</option>
+                        <option value="nvidia_rtx_4080" data-type="dedicated">Nvidia RTX 4080</option>
+                        <option value="nvidia_rtx_4090" data-type="dedicated">Nvidia RTX 4090</option>
+                        <option value="amd_radeon_rx" data-type="dedicated">AMD Radeon RX Series</option>
+                        <option value="amd_radeon_6000" data-type="dedicated">AMD Radeon 6000 Series</option>
+                        <option value="amd_radeon_7000" data-type="dedicated">AMD Radeon 7000 Series</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -114,6 +134,27 @@
         }
         brand.addEventListener('change', filterTier);
         filterTier();
+
+        // GPU Brand/Model filter
+        const gpuType = document.getElementById('gpu_type');
+        const gpuModel = document.getElementById('gpu_model');
+        function filterGpuModel() {
+            const selectedType = gpuType.value;
+            Array.from(gpuModel.options).forEach(opt => {
+                if (!opt.value) return;
+                if (opt.dataset.type && opt.dataset.type !== selectedType) {
+                    opt.style.display = 'none';
+                } else {
+                    opt.style.display = '';
+                }
+            });
+            // Reset selection if not valid
+            if (gpuModel.selectedIndex > 0 && gpuModel.options[gpuModel.selectedIndex].style.display === 'none') {
+                gpuModel.selectedIndex = 0;
+            }
+        }
+        gpuType.addEventListener('change', filterGpuModel);
+        filterGpuModel();
     });
     </script>
 </body>
