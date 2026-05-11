@@ -40,7 +40,15 @@ model.fit(X, y)
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Penjelasan singkat untuk user awam (dikirim ke template)
+    app_info = {
+        'title': 'Laptop Price Predictor',
+        'description': (
+            'Aplikasi ini membantu Anda memperkirakan harga laptop berdasarkan spesifikasi utama. '
+            'Cukup isi data sesuai petunjuk, lalu klik tombol prediksi. Tidak perlu paham teknis!'
+        )
+    }
+    return render_template('index.html', app_info=app_info)
 
 @app.route('/predict', methods=['POST'])
 def predict():

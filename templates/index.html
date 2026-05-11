@@ -4,83 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laptop Price Predictor</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='minimal.css') }}">
 </head>
 <body>
+    <div class="bg-anim"></div>
+    <main class="container animated-fadein">
+        <header>
+            <h1 class="gradient-text">💻 {{ app_info.title if app_info else 'Laptop Price Predictor' }}</h1>
+            {% if app_info and app_info.description %}
+            <p class="app-desc">{{ app_info.description }}</p>
+            {% endif %}
+        </header>
+        <section class="user-guide">
+            <ol>
+                <li>Pilih merek & seri prosesor.</li>
+                <li>Isi core, thread, RAM, storage.</li>
+                <li>Pilih GPU & ukuran layar.</li>
+                <li>Klik <b>Predict Price</b>.</li>
+            </ol>
+            <p class="help-text">* Data bisa dilihat di spesifikasi laptop.</p>
+        </section>
+        <form id="predict-form" class="glass-form" autocomplete="off">
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="processor_brand">Processor Brand</label>
+                    <select id="processor_brand" name="processor_brand" required>
+                        <option value="" disabled selected>Pilih merek prosesor</option>
+                        <option value="intel">Intel</option>
+                        <option value="amd">AMD</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="processor_tier">Processor Tier</label>
+                    <select id="processor_tier" name="processor_tier" required>
+                        <option value="" disabled selected>Pilih seri prosesor</option>
+                        <option value="core i3" data-brand="intel">Core i3</option>
+                        <option value="core i5" data-brand="intel">Core i5</option>
+                        <option value="core i7" data-brand="intel">Core i7</option>
+                        <option value="ryzen 3" data-brand="amd">Ryzen 3</option>
+                        <option value="ryzen 5" data-brand="amd">Ryzen 5</option>
+                        <option value="ryzen 7" data-brand="amd">Ryzen 7</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="num_cores">CPU Cores</label>
+                      <input type="number" id="num_cores" name="num_cores" min="1" placeholder="4" required>
+                </div>
+                <div class="input-group">
+                    <label for="num_threads">CPU Threads</label>
+                      <input type="number" id="num_threads" name="num_threads" min="1" placeholder="8" required>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="ram_memory">RAM (GB)</label>
+                      <input type="number" id="ram_memory" name="ram_memory" min="1" placeholder="8" required>
 
-<div class="container">
-
-    <h1>Laptop Price Predictor</h1>
-
-    <form id="predict-form">
-
-        <div class="input-group">
-            <label>Processor Brand</label>
-            <select id="processor_brand">
-                <option value="intel">Intel</option>
-                <option value="amd">AMD</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Processor Tier</label>
-            <select id="processor_tier">
-                <option value="core i3">Core i3</option>
-                <option value="core i5">Core i5</option>
-                <option value="core i7">Core i7</option>
-                <option value="ryzen 3">Ryzen 3</option>
-                <option value="ryzen 5">Ryzen 5</option>
-                <option value="ryzen 7">Ryzen 7</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>CPU Cores</label>
-            <input type="number" id="num_cores" required>
-        </div>
-
-        <div class="input-group">
-            <label>CPU Threads</label>
-            <input type="number" id="num_threads" required>
-        </div>
-
-        <div class="input-group">
-            <label>RAM (GB)</label>
-            <input type="number" id="ram_memory" required>
-        </div>
-
-        <div class="input-group">
-            <label>Storage (GB)</label>
-            <input type="number" id="storage" required>
-        </div>
-
-        <div class="input-group">
-            <label>GPU Type</label>
-            <select id="gpu_type">
-                <option value="integrated">Integrated</option>
-                <option value="dedicated">Dedicated</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label>Display Size</label>
-            <input type="number" step="0.1" id="display_size" required>
-        </div>
-
-        <button type="submit">
-            Predict Price
-        </button>
-
-    </form>
-
-    <div class="result-box">
-        <h2 id="result"></h2>
-    </div>
-
-</div>
-
-<script src="{{ url_for('static', filename='script.js') }}"></script>
-
+                </div>
+                <div class="input-group">
+                    <label for="storage">Storage (GB)</label>
+                      <input type="number" id="storage" name="storage" min="1" placeholder="512" required>
+                </div>
+            </div>
+            <div class="input-row">
+                <div class="input-group">
+                    <label for="gpu_type">GPU Type</label>
+                    <select id="gpu_type" name="gpu_type" required>
+                        <option value="" disabled selected>Pilih GPU</option>
+                        <option value="integrated">Integrated</option>
+                        <option value="dedicated">Dedicated</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="display_size">Display Size (inch)</label>
+                      <input type="number" step="0.1" id="display_size" name="display_size" min="10" max="20" placeholder="14.0" required>
+                </div>
+            </div>
+            <button type="submit" class="animated-btn">
+                <span>Predict Price</span>
+            </button>
+        </form>
+        <section class="result-box animated-result">
+            <h2 id="result"></h2>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+    // Filter processor tier sesuai brand
+    document.addEventListener('DOMContentLoaded', function() {
+        const brand = document.getElementById('processor_brand');
+        const tier = document.getElementById('processor_tier');
+        function filterTier() {
+            const selectedBrand = brand.value;
+            Array.from(tier.options).forEach(opt => {
+                if (!opt.value) return; // skip placeholder
+                if (opt.dataset.brand && opt.dataset.brand !== selectedBrand) {
+                    opt.style.display = 'none';
+                } else {
+                    opt.style.display = '';
+                }
+            });
+            // Reset selection if not valid
+            if (tier.selectedIndex > 0 && tier.options[tier.selectedIndex].style.display === 'none') {
+                tier.selectedIndex = 0;
+            }
+        }
+        brand.addEventListener('change', filterTier);
+        filterTier();
+    });
+    </script>
 </body>
 </html>
