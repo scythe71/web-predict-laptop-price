@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laptop Price Predictor</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Laptop Price Predictor</h1>
+
+    <form id="predict-form">
+
+        <div class="input-group">
+            <label>Processor Brand</label>
+            <select id="processor_brand">
+                <option value="intel">Intel</option>
+                <option value="amd">AMD</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Processor Tier</label>
+            <select id="processor_tier">
+                <option value="core i3">Core i3</option>
+                <option value="core i5">Core i5</option>
+                <option value="core i7">Core i7</option>
+                <option value="ryzen 3">Ryzen 3</option>
+                <option value="ryzen 5">Ryzen 5</option>
+                <option value="ryzen 7">Ryzen 7</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>CPU Cores</label>
+            <input type="number" id="num_cores" required>
+        </div>
+
+        <div class="input-group">
+            <label>CPU Threads</label>
+            <input type="number" id="num_threads" required>
+        </div>
+
+        <div class="input-group">
+            <label>RAM (GB)</label>
+            <input type="number" id="ram_memory" required>
+        </div>
+
+        <div class="input-group">
+            <label>Storage (GB)</label>
+            <input type="number" id="storage" required>
+        </div>
+
+        <div class="input-group">
+            <label>GPU Type</label>
+            <select id="gpu_type">
+                <option value="integrated">Integrated</option>
+                <option value="dedicated">Dedicated</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>Display Size</label>
+            <input type="number" step="0.1" id="display_size" required>
+        </div>
+
+        <button type="submit">
+            Predict Price
+        </button>
+
+    </form>
+
+    <div class="result-box">
+        <h2 id="result"></h2>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
