@@ -1,49 +1,92 @@
-document.getElementById('predict-form')
-.addEventListener('submit', async (e) => {
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('predict-form');
+    const brandSelect = document.getElementById('processor_brand');
+    const tierSelect = document.getElementById('processor_tier');
+    const resultBox = document.getElementById('result');
 
-    e.preventDefault();
+    const allTierOptions = Array.from(tierSelect.options).map(option => ({
+        value: option.value,
+        text: option.text
+    }));
 
-    const data = {
+    function filterTiers() {
+        const brand = brandSelect.value.toLowerCase();
 
-        processor_brand:
-            document.getElementById('processor_brand').value,
+        const filteredOptions = allTierOptions.filter(option => {
+            const value = option.value.toLowerCase();
 
-        processor_tier:
-            document.getElementById('processor_tier').value,
+            if (brand === 'amd') {
+                return value.startsWith('ryzen');
+            }
 
-        num_cores:
-            document.getElementById('num_cores').value,
+            if (brand === 'intel') {
+                return value.startsWith('core');
+            }
 
-        num_threads:
-            document.getElementById('num_threads').value,
+            return true;
+        });
 
-        ram_memory:
-            document.getElementById('ram_memory').value,
+        tierSelect.innerHTML = '';
 
-        storage:
-            document.getElementById('storage').value,
+        filteredOptions.forEach(option => {
+            tierSelect.add(new Option(option.text, option.value));
+        });
+    }
 
-        gpu_type:
-            document.getElementById('gpu_type').value,
+    brandSelect.addEventListener('change', filterTiers);
+    filterTiers();
 
-        display_size:
-            document.getElementById('display_size').value
-    };
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    const response = await fetch('/predict', {
+        const data = {
+            processor_brand: brandSelect.value,
+            processor_tier: tierSelect.value,
+            num_cores: document.getElementById('num_cores').value,
+            num_threads: document.getElementById('num_threads').value,
+            ram_memory: document.getElementById('ram_memory').value,
+            storage: document.getElementById('storage').value,
+            gpu_type: document.getElementById('gpu_type').value,
+            display_size: document.getElementById('display_size').value
+        };
 
-        method: 'POST',
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
 
-        headers: {
-            'Content-Type': 'application/json'
-        },
+            const result = await response.json();
 
-        body: JSON.stringify(data)
+            if (!response.ok) {
+                throw new Error(result.error || 'Prediction failed');
+            }
+
+            const price = Number(result.predicted_price).toLocaleString('id-ID');
+
+            resultBox.innerText = `Predicted Price: Rp ${price}`;
+
+            Swal.fire({
+                title: 'Prediction Result',
+                html: `
+                    <p><strong>Predicted Price:</strong> Rp ${price}</p>
+                    <p><strong>MSE:</strong> ${result.mse}</p>
+                    <p><strong>MAE:</strong> ${result.mae}</p>
+                    <p><strong>R²:</strong> ${result.r2}</p>
+                `,
+                icon: 'info'
+            });
+        } catch (error) {
+            resultBox.innerText = 'Prediction failed. Check your input.';
+
+            Swal.fire({
+                title: 'Error',
+                text: error.message,
+                icon: 'error'
+            });
+        }
     });
-
-    const result = await response.json();
-
-    document.getElementById('result')
-        .innerText =
-        `Predicted Price: Rp ${Number(result.predicted_price).toLocaleString('id-ID')}`;
 });
