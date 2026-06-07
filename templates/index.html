@@ -4,75 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Laptop Price Predictor</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <div class="container">
-    <h1>Laptop Price Predictor</h1>
+    <div class="header">
+        <h1>Laptop Price Predictor</h1>
+        <p class="subtitle">Masukkan spesifikasi laptop untuk memperkirakan harga pasar</p>
+    </div>
 
     <form id="predict-form">
-        <div class="input-group">
-            <label for="processor_brand">Processor Brand</label>
-            <select id="processor_brand" required>
-                <option value="intel">Intel</option>
-                <option value="amd">AMD</option>
-            </select>
+
+        <div class="section">
+            <div class="section-title">Prosesor</div>
+            <div class="section-body">
+                <div class="input-group">
+                    <label for="processor_brand">Brand</label>
+                    <select id="processor_brand" required>
+                        <option value="intel">Intel</option>
+                        <option value="amd">AMD</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="processor_tier">Seri</label>
+                    <select id="processor_tier" required></select>
+                </div>
+                <div class="input-group">
+                    <label for="num_cores">Core</label>
+                    <input type="number" id="num_cores" placeholder="cth: 4" min="1" required>
+                    <span class="helper">Jumlah fisik core CPU</span>
+                </div>
+                <div class="input-group">
+                    <label for="num_threads">Thread</label>
+                    <input type="number" id="num_threads" placeholder="cth: 8" min="1" required>
+                    <span class="helper">Jumlah thread CPU</span>
+                </div>
+            </div>
         </div>
 
-        <div class="input-group">
-            <label for="processor_tier">Processor Tier</label>
-            <select id="processor_tier" required>
-                <option value="core i3">Core i3</option>
-                <option value="core i5">Core i5</option>
-                <option value="core i7">Core i7</option>
-                <!--<option value="core i9"Core i9</option-->
-                <option value="ryzen 3">Ryzen 3</option>
-                <option value="ryzen 5">Ryzen 5</option>
-                <option value="ryzen 7">Ryzen 7</option>
-                <!--<option value="ryzen 9"Ryzen 9</option-->
-            </select>
+        <div class="section">
+            <div class="section-title">Memori & Penyimpanan</div>
+            <div class="section-body">
+                <div class="input-group">
+                    <label for="ram_memory">RAM</label>
+                    <input type="number" id="ram_memory" placeholder="cth: 16" min="1" required>
+                    <span class="helper">GB — kapasitas RAM</span>
+                </div>
+                <div class="input-group">
+                    <label for="storage">Storage</label>
+                    <input type="number" id="storage" placeholder="cth: 512" min="1" required>
+                    <span class="helper">GB — kapasitas penyimpanan utama</span>
+                </div>
+            </div>
         </div>
 
-        <div class="input-group">
-            <label for="num_cores">CPU Cores</label>
-            <input type="number" id="num_cores" min="1" required>
+        <div class="section">
+            <div class="section-title">Grafis & Layar</div>
+            <div class="section-body">
+                <div class="input-group">
+                    <label for="gpu_type">GPU</label>
+                    <select id="gpu_type" required>
+                        <option value="integrated">Integrated</option>
+                        <option value="dedicated">Dedicated</option>
+                    </select>
+                    <span class="helper">GPU terintegrasi atau dedicated</span>
+                </div>
+                <div class="input-group">
+                    <label for="display_size">Ukuran Layar</label>
+                    <input type="number" step="0.1" id="display_size" placeholder="cth: 15.6" min="1" required>
+                    <span class="helper">Inci — diagonal layar</span>
+                </div>
+            </div>
         </div>
 
-        <div class="input-group">
-            <label for="num_threads">CPU Threads</label>
-            <input type="number" id="num_threads" min="1" required>
-        </div>
-
-        <div class="input-group">
-            <label for="ram_memory">RAM (GB)</label>
-            <input type="number" id="ram_memory" min="1" required>
-        </div>
-
-        <div class="input-group">
-            <label for="storage">Storage (GB)</label>
-            <input type="number" id="storage" min="1" required>
-        </div>
-
-        <div class="input-group">
-            <label for="gpu_type">GPU Type</label>
-            <select id="gpu_type" required>
-                <option value="integrated">Integrated</option>
-                <option value="dedicated">Dedicated</option>
-            </select>
-        </div>
-
-        <div class="input-group">
-            <label for="display_size">Display Size</label>
-            <input type="number" step="0.1" id="display_size" min="1" required>
-        </div>
-
-        <button type="submit">Predict Price</button>
+        <button type="submit" id="predict-btn">Prediksi Harga</button>
     </form>
 
     <div class="result-box">
-        <h2 id="result"></h2>
+        <div id="result"></div>
     </div>
 </div>
 

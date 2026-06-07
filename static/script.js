@@ -3,34 +3,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const brandSelect = document.getElementById('processor_brand');
     const tierSelect = document.getElementById('processor_tier');
     const resultBox = document.getElementById('result');
+    const btn = document.getElementById('predict-btn');
 
-    const allTierOptions = Array.from(tierSelect.options).map(option => ({
-        value: option.value,
-        text: option.text
-    }));
+    const allTierOptions = [
+        { value: 'core i3', text: 'Core i3' },
+        { value: 'core i5', text: 'Core i5' },
+        { value: 'core i7', text: 'Core i7' },
+        { value: 'ryzen 3', text: 'Ryzen 3' },
+        { value: 'ryzen 5', text: 'Ryzen 5' },
+        { value: 'ryzen 7', text: 'Ryzen 7' }
+    ];
 
     function filterTiers() {
-        const brand = brandSelect.value.toLowerCase();
+        const brand = brandSelect.value;
 
-        const filteredOptions = allTierOptions.filter(option => {
-            const value = option.value.toLowerCase();
-
-            if (brand === 'amd') {
-                return value.startsWith('ryzen');
-            }
-
-            if (brand === 'intel') {
-                return value.startsWith('core');
-            }
-
-            return true;
+        const filtered = allTierOptions.filter(opt => {
+            if (brand === 'amd') return opt.value.startsWith('ryzen');
+            return opt.value.startsWith('core');
         });
 
         tierSelect.innerHTML = '';
-
-        filteredOptions.forEach(option => {
-            tierSelect.add(new Option(option.text, option.value));
-        });
+        filtered.forEach(opt => tierSelect.add(new Option(opt.text, opt.value)));
     }
 
     brandSelect.addEventListener('change', filterTiers);
@@ -50,43 +43,59 @@ document.addEventListener('DOMContentLoaded', () => {
             display_size: document.getElementById('display_size').value
         };
 
+        btn.disabled = true;
+        btn.textContent = 'Memproses...';
+        resultBox.textContent = '';
+        resultBox.classList.remove('has-value');
+
         try {
             const response = await fetch('/predict', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             });
 
             const result = await response.json();
 
             if (!response.ok) {
-                throw new Error(result.error || 'Prediction failed');
+                throw new Error(result.error || 'Prediksi gagal');
             }
 
             const price = Number(result.predicted_price).toLocaleString('id-ID');
 
-            resultBox.innerText = `Predicted Price: Rp ${price}`;
+            resultBox.textContent = `Rp ${price}`;
+            resultBox.classList.add('has-value');
 
             Swal.fire({
-                title: 'Prediction Result',
+                title: 'Hasil Prediksi',
                 html: `
-                    <p><strong>Predicted Price:</strong> Rp ${price}</p>
-                    <p><strong>MSE:</strong> ${result.mse}</p>
-                    <p><strong>MAE:</strong> ${result.mae}</p>
-                    <p><strong>R²:</strong> ${result.r2}</p>
+                    <div style="text-align:left; font-size:14px; line-height:1.8;">
+                        <p style="text-align:center; font-size:20px; font-weight:700; color:#2563eb; margin-bottom:12px;">
+                            Rp ${price}
+                        </p>
+                        <hr style="border:none; border-top:1px solid #e5e7eb; margin:10px 0;">
+                        <p style="font-size:12px; color:#9ca3af;">Performa Model</p>
+                        <p><strong>R² Score:</strong> ${result.r2} — seberapa baik model menjelaskan variasi harga</p>
+                        <p><strong>MAE:</strong> Rp ${Number(result.mae).toLocaleString('id-ID')} — rata-rata kesalahan prediksi</p>
+                        <p><strong>MSE:</strong> Rp ${Number(result.mse).toLocaleString('id-ID')} — kesalahan kuadrat rata-rata</p>
+                    </div>
                 `,
-                icon: 'info'
+                icon: 'info',
+                confirmButtonText: 'Tutup'
             });
         } catch (error) {
-            resultBox.innerText = 'Prediction failed. Check your input.';
+            resultBox.textContent = 'Prediksi gagal. Periksa input.';
+            resultBox.classList.remove('has-value');
 
             Swal.fire({
                 title: 'Error',
                 text: error.message,
-                icon: 'error'
+                icon: 'error',
+                confirmButtonText: 'Tutup'
             });
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Prediksi Harga';
         }
     });
 });

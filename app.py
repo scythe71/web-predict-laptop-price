@@ -1,13 +1,21 @@
 from flask import Flask, render_template, request, jsonify
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import pandas as pd
-from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 app = Flask(__name__)
 
 # Load dataset
 df = pd.read_csv('laptops_raw.csv')
-df = df.dropna().copy()
+
+# Kolom sumber yang relevan untuk fitur + target
+source_cols = [
+    'processor_brand', 'processor_tier', 'num_cores', 'num_threads',
+    'ram_memory', 'primary_storage_capacity', 'gpu_type', 'display_size', 'Price'
+]
+df = df[source_cols].dropna().copy()
 
 # Convert price to numeric
 kurs_inr_to_idr = 190
@@ -63,17 +71,25 @@ features.extend(brand_features)
 X = df[features]
 y = df['Price']
 
-model = LinearRegression()
-model.fit(X, y)
+# Train-test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Feature scaling
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+model = RandomForestRegressor(n_estimators=100, random_state=42)
+model.fit(X_train_scaled, y_train)
 
 # Store feature columns for prediction
 feature_columns = X.columns.tolist()
 
-# Compute evaluation metrics on training data
-y_pred = model.predict(X)
-mse = mean_squared_error(y, y_pred)
-mae = mean_absolute_error(y, y_pred)
-r2 = r2_score(y, y_pred)
+# Compute evaluation metrics on testing data
+y_pred = model.predict(X_test_scaled)
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
 
 @app.route('/')
 def home():
@@ -122,7 +138,8 @@ def predict():
 
     new_data = pd.DataFrame([input_dict])
 
-    prediction = model.predict(new_data)
+    new_data_scaled = scaler.transform(new_data)
+    prediction = model.predict(new_data_scaled)
 
     price_inr = prediction[0]
     price_idr = price_inr * kurs_inr_to_idr
